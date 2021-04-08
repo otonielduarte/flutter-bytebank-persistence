@@ -19,6 +19,7 @@ class Transaction {
         contact = Contact.fromJson(json['contact']);
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'value': value,
         'contact': contact.toJson(),
       };

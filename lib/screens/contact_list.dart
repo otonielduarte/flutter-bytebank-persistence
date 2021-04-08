@@ -20,48 +20,47 @@ class ContactStateList extends State<ContactsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(_titleAppBar),
-        ),
-        body: FutureBuilder<List<Contact>>(
-          initialData: [],
-          future: _dao.findAll(),
-          builder: (context, snapshop) {
-            switch (snapshop.connectionState) {
-              case ConnectionState.none:
-                break;
-              case ConnectionState.waiting:
-                return LoadingComponent();
-              case ConnectionState.active:
-                break;
-              case ConnectionState.done:
-                final List<Contact> contacts = snapshop.data;
-                if (contacts == null) return Text('No contacts found');
-                return ListView.builder(
-                  itemCount: contacts.length,
-                  itemBuilder: (context, index) => _CardContact(
-                    contacts[index],
-                    handleOnTap: () => {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              TransactionForm(contacts[index]),
-                        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_titleAppBar),
+      ),
+      body: FutureBuilder<List<Contact>>(
+        initialData: [],
+        future: _dao.findAll(),
+        builder: (context, snapshop) {
+          switch (snapshop.connectionState) {
+            case ConnectionState.none:
+              break;
+            case ConnectionState.waiting:
+              return LoadingComponent();
+            case ConnectionState.active:
+              break;
+            case ConnectionState.done:
+              final List<Contact> contacts = snapshop.data;
+              if (contacts == null) {
+                return Text('No contacts found');
+              }
+              return ListView.builder(
+                itemCount: contacts.length,
+                itemBuilder: (context, index) => _CardContact(
+                  contacts[index],
+                  handleOnTap: () => {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => TransactionForm(contacts[index]),
                       ),
-                    },
-                  ),
-                );
-            }
-            return Text('Unkown error');
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).accentColor,
-          onPressed: () => _navigateToForm(context),
-          child: Icon(Icons.add),
-        ),
+                    ),
+                  },
+                ),
+              );
+          }
+          return Text('Unkown error');
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).accentColor,
+        onPressed: () => _navigateToForm(context),
+        child: Icon(Icons.add),
       ),
     );
   }

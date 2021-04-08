@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:bytebank_persistense_app/models/transaction.dart';
 import 'package:bytebank_persistense_app/services/base_api.dart';
+import 'package:bytebank_persistense_app/services/exceptions/http_exception.dart';
 import 'package:http/http.dart';
-
-const String transactionUrl = 'http://192.168.0.108:8080/transactions';
 
 class TransactionApi {
   Future<List<Transaction>> findAllTransactions() async {
-    final Response response = await client.get(Uri.parse(transactionUrl));
+    final Response response =
+        await client.get(Uri.parse('$baseUrl/transactions'));
     if (response.statusCode != 200) {
       return [];
     }
@@ -18,11 +18,13 @@ class TransactionApi {
         .toList();
   }
 
-  Future<Transaction> save(Transaction transaction) async {
-    Response response = await client.post(Uri.parse(transactionUrl),
+  Future<Transaction> save(Transaction transaction, String password) async {
+    await Future.delayed(Duration(seconds: 12));
+
+    Response response = await client.post(Uri.parse('$baseUrl/transactions'),
         headers: {
           'content-type': 'application/json',
-          'password': '1000',
+          'password': password,
         },
         body: jsonEncode(transaction.toJson()));
 
@@ -30,6 +32,14 @@ class TransactionApi {
       return Transaction.fromJson(jsonDecode(response.body));
     }
 
-    return null;
+    final message = _statusCodeResponses[response.statusCode];
+    return throw HttpException(
+        message != null ? message : 'Unknown Error error');
   }
+
+  static final Map<int, String> _statusCodeResponses = {
+    400: 'there was an error submitting transaction',
+    401: 'authentication failed',
+    409: 'Transaction already exists'
+  };
 }
