@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:bytebank_persistense_app/database/dao/contact_dao.dart';
 import 'package:bytebank_persistense_app/models/contact.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +76,8 @@ class _ContactFormState extends State<ContactForm> {
     final accountNumber = int.tryParse(_accountController.text);
     final name = _nameController.text;
     if (accountNumber != null && name != null) {
-      _dao.save(Contact(0, name, accountNumber))
+      _dao
+          .save(Contact(0, name, accountNumber))
           .then((id) => Navigator.pop(context));
     }
   }

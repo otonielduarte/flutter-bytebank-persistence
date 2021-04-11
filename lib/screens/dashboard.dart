@@ -1,6 +1,8 @@
 import 'package:bytebank_persistense_app/screens/contact_list.dart';
+import 'package:bytebank_persistense_app/screens/name.dart';
 import 'package:bytebank_persistense_app/screens/transaction_feed.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Dashboard extends StatelessWidget {
   void _navigateToContacts(context) {
@@ -19,19 +21,32 @@ class Dashboard extends StatelessWidget {
     );
   }
 
+  void _navigateToChangeName(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (routerContext) => BlocProvider.value(
+          value: BlocProvider.of<NameCubit>(context),
+          child: NameContainer(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Text('Dashboard ${context.watch<NameCubit>().state}'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset('images/bytebank_logo.png'),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: Image.asset('images/bytebank_logo.png'),
+            ),
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -47,6 +62,11 @@ class Dashboard extends StatelessWidget {
                   Icons.description,
                   onTap: () => _navigateToFeed(context),
                 ),
+                _DashboardItem(
+                  'Change name',
+                  Icons.people,
+                  onTap: () => _navigateToChangeName(context),
+                )
               ],
             ),
           ),
